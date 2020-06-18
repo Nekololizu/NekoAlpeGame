@@ -7,6 +7,8 @@ const FRICTION = 500 # how long it takes for the player to lose speed when not m
 var velocity = Vector2.ZERO 
 
 onready var animationPlayer = $AnimationPlayer
+onready var animationTree = $AnimationTree
+onready var animationState = animationTree.get("parameters/playback")
 
 func _physics_process(delta): # If something changes & is connected to frame rate you have to multiplie"*" with delta
 	var input_vector = Vector2.ZERO
@@ -15,14 +17,13 @@ func _physics_process(delta): # If something changes & is connected to frame rat
 	input_vector = input_vector.normalized() #Makes moving in multiple directions the same speed as moving in 1 direction
 	
 	if input_vector != Vector2.ZERO: # If the input vector is not equal to vector2
-		if input_vector.x > 0:
-			animationPlayer.play("RunRight")
-		else:
-			animationPlayer.play("RunLeft")
+		animationTree.set("parameters/Idle/blend_position", input_vector)
+		animationTree.set("parameters/Run/blend_position", input_vector)
+		animationState.travel("Run")
 		velocity = velocity.move_toward(input_vector * MAX_SPEED, ACCELERATION * delta)
 	
 	else: # If the input vector is equal to vector2
-		animationPlayer.play("IdleRight")
+		animationState.travel("Idle")
 		velocity = velocity.move_toward(Vector2.ZERO, FRICTION * delta)
 	
 	velocity = move_and_slide(velocity)
