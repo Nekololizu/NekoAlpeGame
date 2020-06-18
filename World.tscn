@@ -27,3 +27,7 @@ texture = ExtResource( 1 )
 [node name="Bush6" type="Sprite" parent="."]
 position = Vector2( 261.95, 145.161 )
 texture = ExtResource( 1 )
+
+[node name="Bush7" type="Sprite" parent="."]
+position = Vector2( 202.915, 155.428 )
+texture = ExtResource( 1 )
