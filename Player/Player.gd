@@ -1,10 +1,10 @@
 extends KinematicBody2D
 
-const ACCELERATION = 100
-const MAX_SPEED = 100
-const FRICTION = 10
+const ACCELERATION = 500 # how fast the player gains speed
+const MAX_SPEED = 80 # how fast the player can move
+const FRICTION = 500 # how long it takes for the player to lose speed when not moving
 
-var velocity = Vector2.ZERO
+var velocity = Vector2.ZERO 
 
 func _physics_process(delta): # If something changes & is connected to frame rate you have to multiplie"*" with delta
 	var input_vector = Vector2.ZERO
@@ -12,10 +12,10 @@ func _physics_process(delta): # If something changes & is connected to frame rat
 	input_vector.y = Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
 	input_vector = input_vector.normalized() #Makes moving in multiple directions the same speed as moving in 1 direction
 	
-	if input_vector != Vector2.ZERO:
-		velocity += input_vector * ACCELERATION * delta
-		velocity = velocity.clamped(MAX_SPEED * delta)
-	else:
+	if input_vector != Vector2.ZERO: # If the input vector is not equal to vector2
+		velocity = velocity.move_toward(input_vector * MAX_SPEED, ACCELERATION * delta)
+	
+	else: # If the input vector is equal to vector2
 		velocity = velocity.move_toward(Vector2.ZERO, FRICTION * delta)
 	
-	move_and_collide(velocity)
+	velocity = move_and_slide(velocity)
