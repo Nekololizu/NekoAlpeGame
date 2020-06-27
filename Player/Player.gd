@@ -1,8 +1,9 @@
 extends KinematicBody2D
 
-const ACCELERATION = 500
-const MAX_SPEED = 80
-const FRICTION = 500
+export var ACCELERATION = 500
+export var MAX_SPEED = 80
+export var ROLL_SPEED = 125
+export var FRICTION = 500
 
 enum {
 	MOVE,
@@ -12,13 +13,16 @@ enum {
 
 var state = MOVE
 var velocity = Vector2.ZERO
+var roll_vector = Vector2.DOWN
 
 onready var anim_player = $AnimationPlayer
 onready var anim_tree = $AnimationTree
 onready var anim_state = anim_tree.get("parameters/playback")
+onready var sword_hitbox = $HitboxPivot/SwordHitbox
 
 func _ready() -> void:
 	anim_tree.active = true
+	sword_hitbox.knockback_vector = roll_vector
 
 func _physics_process(delta: float) -> void:
 	match state:
@@ -26,7 +30,7 @@ func _physics_process(delta: float) -> void:
 			move_state(delta)
 			
 		ROLL:
-			pass
+			roll_state(delta)
 			
 		ATTACK:
 			attack_state(delta)
@@ -38,23 +42,41 @@ func move_state(delta):
 	input_vector = input_vector.normalized()
 	
 	if input_vector != Vector2.ZERO:
+		roll_vector = input_vector
+		sword_hitbox.knockback_vector = input_vector
 		anim_tree.set("parameters/Idle/blend_position", input_vector)
 		anim_tree.set("parameters/Run/blend_position", input_vector)
 		anim_tree.set("parameters/Attack/blend_position", input_vector)
+		anim_tree.set("parameters/Roll/blend_position", input_vector)
 		anim_state.travel("Run")
 		velocity = velocity.move_toward(input_vector * MAX_SPEED, ACCELERATION * delta)
 	else:
 		anim_state.travel("Idle")
 		velocity = velocity.move_toward(Vector2.ZERO, FRICTION * delta)
 	
-	velocity = move_and_slide(velocity)
+	move(velocity)
 	
 	if Input.is_action_just_pressed("attack"):
 		state = ATTACK
+	if Input.is_action_just_pressed("roll"):
+		state = ROLL
+
 
 func attack_state(delta):
 	velocity = Vector2.ZERO
 	anim_state.travel("Attack")
 
+func roll_state(delta):
+	velocity = roll_vector * ROLL_SPEED
+	anim_state.travel("Roll")
+	move(velocity)
+	
+func move(inp_vel):
+	velocity = move_and_slide(velocity)
+
 func attack_animation_finished():
+	state = MOVE
+	
+func roll_animation_finished():
+	velocity *=  0.8
 	state = MOVE
