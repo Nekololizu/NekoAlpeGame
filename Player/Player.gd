@@ -1,9 +1,9 @@
 extends KinematicBody2D
 
-const ACCELERATION = 500 # how fast the player gains speed
-const MAX_SPEED = 80 # how fast the player can move
-const FRICTION = 500 # how long it takes for the player to lose speed when not moving
-const ROLL_SPEED = 1.5
+export var ACCELERATION = 500 # how fast the player gains speed
+export var MAX_SPEED = 80 # how fast the player can move
+export var FRICTION = 500 # how long it takes for the player to lose speed when not moving
+export var ROLL_SPEED = 1.5
 
 enum {
 	MOVE,
