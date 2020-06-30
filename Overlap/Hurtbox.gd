@@ -5,6 +5,7 @@ const HitEffect = preload("res://Effects/HitEffect.tscn")
 var iframe = false setget set_iframe
 
 onready var timer = $Timer
+onready var collisionShape = $CollisionShape2D
 
 signal iframe_started
 signal iframe_ended
@@ -30,7 +31,7 @@ func _on_Timer_timeout():
 	self.iframe = false
 
 func _on_Hurtbox_iframe_started():
-	set_deferred("monitorable", false)
+	collisionShape.set_deferred("disabled", true)
 
 func _on_Hurtbox_iframe_ended():
-	set_deferred("monitorable", true)
+	collisionShape.disabled = false
