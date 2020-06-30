@@ -20,5 +20,7 @@ func set_max_hp(value):
 func _ready():
 	self.max_hp = PlayerStats.max_health
 	self.hp = PlayerStats.health
+	# warning-ignore:return_value_discarded
 	PlayerStats.connect("health_change", self, "set_hp")
+	# warning-ignore:return_value_discarded
 	PlayerStats.connect("max_health_changed", self, "set_max_hp")

@@ -1,5 +1,7 @@
 extends KinematicBody2D
 
+const PlayerHurtSound = preload("res://Player/PlayerHurtSound.tscn")
+
 export var ACCELERATION = 500 # how fast the player gains speed
 export var MAX_SPEED = 80 # how fast the player can move
 export var FRICTION = 500 # how long it takes for the player to lose speed when not moving
@@ -21,6 +23,7 @@ onready var animationTree = $AnimationTree
 onready var animationState = animationTree.get("parameters/playback")
 onready var SwordHitBox = $HitboxPivot/SwordHitbox
 onready var hurtbox = $Hurtbox
+onready var BlinkAnimationPlayer = $BlinkAnimationPlayer
 
 func _ready():
 	randomize()
@@ -34,10 +37,10 @@ func _physics_process(delta): # If something changes & is connected to frame rat
 			move_state(delta)
 		
 		ROLL:
-			roll_state(delta)
+			roll_state()
 		
 		ATTACK:
-			attack_state(delta)
+			attack_state()
 
 func move_state(delta):
 	var input_vector = Vector2.ZERO
@@ -67,12 +70,12 @@ func move_state(delta):
 	if Input.is_action_just_pressed("attack"):
 		state = ATTACK
 
-func roll_state(delta):
+func roll_state():
 	velocity = roll_vector * MAX_SPEED * ROLL_SPEED
 	animationState.travel("Roll")
 	move()
 
-func attack_state(delta):
+func attack_state():
 	velocity = Vector2.ZERO
 	animationState.travel("Attack")
 
@@ -88,6 +91,15 @@ func attack_animation_finished():
 
 
 func _on_Hurtbox_area_entered(area):
-	stats.health -= 1
-	hurtbox.start_iframe(0.5)
+	stats.health -= area.damage
+	hurtbox.start_iframe(0.6)
 	hurtbox.create_hit_effect()
+	#var PlayerHurtSound = PlayerHurtSound.instance() #borked feature
+	#get_tree().current_scene.add_child(PlayerHurtSound)
+
+func _on_Hurtbox_iframe_started():
+	BlinkAnimationPlayer.play("Start")
+
+
+func _on_Hurtbox_iframe_ended():
+	BlinkAnimationPlayer.play("Stop")
