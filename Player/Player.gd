@@ -89,17 +89,15 @@ func roll_animation_finished():
 func attack_animation_finished():
 	state = MOVE
 
-
 func _on_Hurtbox_area_entered(area):
 	stats.health -= area.damage
 	hurtbox.start_iframe(0.6)
 	hurtbox.create_hit_effect()
-	#var PlayerHurtSound = PlayerHurtSound.instance() #borked feature
-	#get_tree().current_scene.add_child(PlayerHurtSound)
+	var playerHurtSound = PlayerHurtSound.instance()
+	get_tree().current_scene.add_child(playerHurtSound)
 
 func _on_Hurtbox_iframe_started():
 	BlinkAnimationPlayer.play("Start")
-
 
 func _on_Hurtbox_iframe_ended():
 	BlinkAnimationPlayer.play("Stop")
